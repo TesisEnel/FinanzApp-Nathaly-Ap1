@@ -1,0 +1,128 @@
+@page "/registro-ingresos"
+@page "/registro-ingresos/{IngresoId:int}"
+@inject HttpClient httpClient
+@* @inject NotificationService notificationServices *@
+
+
+<h3 class="text-primary">Registro de Ingresos</h3>
+
+<EditForm Model="ingresos" >
+    <DataAnnotationsValidator />
+    <div class="col-md-4">
+        <label>ID</label>
+            <div class="input-group">
+                <InputNumber @bind-Value="ingresos.IngresoId" class="form-control" />
+                <button type="button" class="btn btn-outline-primary oi oi-magnifying-glass" @onclick="Buscar"></button>
+            </div>
+    </div>
+    <div class="form-group">
+        <label for="Fecha" class="text-muted">Fecha:</label>
+        <InputDate id="Fecha" @bind-Value="ingresos.Fecha" class="form-control" />
+        <ValidationMessage For="@(() => ingresos.Fecha)" />
+    </div>
+    <div class="form-group">
+        <label for="Monto" class="text-muted">Monto:</label>
+        <InputNumber id="Monto" @bind-Value="ingresos.Monto" class="form-control" />
+        <ValidationMessage For="@(() => ingresos.Monto)" />
+    </div>
+    <div class="form-group">
+        <label for="Categoria" class="text-muted">Categoría:</label>
+        <InputSelect id="Categoria" @bind-Value="ingresos.Categoria" class="form-control">
+            @foreach (var categoria in CategoriaIngresos)
+            {
+                <option value="@categoria">@categoria.Descripcion</option>
+            }
+        </InputSelect>
+    </div> 
+    <div class="form-group">
+        <label for="Descripcion" class="text-muted">Descripción:</label>
+        <InputText id="Descripcion" @bind-Value="ingresos.Descripcion" class="form-control" />
+        <ValidationMessage For="@(() => ingresos.Descripcion)" />
+    </div>    
+    <div class="card-footer d-flex justify-content-center">
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-primary" @onclick="Nuevo">Nuevo <i class="oi oi-file" /></button>
+            <button type="button" class="btn btn-outline-success"@onclick="Guardar">Guardar <i class="oi oi-document" /></button>
+            <button type="button" class="btn btn-outline-danger" @onclick="Eliminar">Eliminar <i class="oi oi-trash" /></button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    // P
+    [Parameter]
+
+    public int IngresoId { get; set; }
+    public Ingresos ingresos { get; set; } = new Ingresos(); 
+    public string Mensaje { get; set; } = string.Empty;
+    private List<Ingresos> CategoriaIngresos = new List<Ingresos>(); 
+    private void RegistrarIngreso()
+    {
+        
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if(IngresoId>0)
+        {
+            this.ingresos.IngresoId = IngresoId;
+            await Buscar();
+        }
+
+        CategoriaIngresos = new List<Ingresos>
+        {
+            new Ingresos { IngresoId = 1, Descripcion = "Deposito" },
+            new Ingresos { IngresoId = 2, Descripcion = "Sueldo" },
+            new Ingresos { IngresoId = 3, Descripcion = "Ahorros" }
+          };
+    }
+
+    
+    public async Task Buscar()
+    {
+        var buscar = await httpClient.GetFromJsonAsync<Ingresos>($"api/Ingresos/{ingresos.IngresoId}");
+        {
+            if (buscar != null)
+            {
+                this.ingresos = buscar;
+                StateHasChanged();
+            }
+            else
+            {
+                    @* notificationServices.ShowNotification(
+                    titulo: "Error de búsqueda",
+                    mensaje: "Registro no encontrado",
+                    NotificationSeverity.Error
+                ); *@
+            }
+        }
+    }
+
+    public bool Validar()
+    {
+        return !string.IsNullOrEmpty(ingresos.Descripcion)
+        && ingresos.IngresoId >= 0;
+    }
+
+    public async void Guardar()
+    {
+      await httpClient.PostAsJsonAsync<Ingresos>("api/Ingresos", ingresos);
+       
+    }
+    public void Nuevo()
+    {
+        this.ingresos = new Ingresos();
+        Mensaje = string.Empty;
+    }
+    public async Task Eliminar()
+    {
+        using var response = await httpClient.DeleteAsync($"api/Ingresos/{ingresos.IngresoId}");
+        if (!response.IsSuccessStatusCode)
+        {
+            Mensaje = response.ReasonPhrase ?? "error";
+            return;
+        }
+        else
+            Nuevo();
+    }
+} 
