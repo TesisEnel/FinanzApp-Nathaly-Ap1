@@ -1,0 +1,290 @@
+@page "/gastos"
+@page "/gastos/{GastoId:int}"
+@inject HttpClient httpClient
+@inject NotificationService notificationServices
+@inject NavigationManager NavigationManager
+
+<EditForm Model="Gastos">
+    <DataAnnotationsValidator />
+    <div class="card">
+        <div class="card-header">
+            <h1>Registrar gastos</h1>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <label>ID</label>
+                    <div class="input-group">
+                        <InputNumber @bind-Value="Gastos.GastoId" class="form-control" />
+                        <button type="button" class="btn btn-outline-primary oi oi-magnifying-glass" @onclick="Buscar"></button>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <label>Fecha</label>
+                    <InputDate @bind-Value="Gastos.Fecha" class="form-control" />
+                    <ValidationMessage For="@(() => Gastos.Fecha)" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label>Descripción</label>
+                    <InputText @bind-Value="Gastos.Descripcion" class="form-control" />
+                    <ValidationMessage For="@(() => Gastos.Descripcion)" />
+                </div>
+                <div class="col-md-6">
+                    <label for="Metodos" class="text-muted">Método de pago</label>
+                    <InputSelect required id="MetodoDePago" @bind-Value="Gastos.MetodoDePago" class="form-control">
+                        @if (Metodos != null)
+                        {
+                            if (string.IsNullOrEmpty(Gastos.MetodoDePago))
+                            {
+                                Gastos.MetodoDePago = Metodos.FirstOrDefault();
+                            }
+                            @foreach (var item in Metodos)
+                            {
+                                <option value="@item">@item</option>
+                            }
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <hr />
+            <div class="card">
+                <div class="card-header">
+                    <h3>Detalles</h3>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="Categoria" class="text-muted">Categoría:</label>
+                        <InputSelect required id="Categoria" @bind-Value="detalle.Categoria" class="form-control">
+                            @if (CategoriasList != null)
+                            {
+                                if (string.IsNullOrEmpty(detalle.Categoria))
+                                {
+                                    detalle.Categoria = CategoriasList.FirstOrDefault();
+                                }
+                                @foreach (var item in CategoriasList)
+                                {
+                                    <option value="@item">@item</option>
+                                }
+                            }
+                        </InputSelect>
+                    </div>
+                    <div class="col-md-5">
+                        <label>Lugar</label>
+                        <InputText @bind-Value="detalle.Lugar" class="form-control" />
+                    </div>
+                    <div class="col-md-4">
+                        <label>Monto</label>
+                        <div class="input-group">
+                            <InputNumber @bind-Value="detalle.Monto" class="form-control"></InputNumber>
+                            <button type="button" class="btn btn-dark" @onclick="AgregarDetalle">Agregar <i class="oi oi-plus"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Categoria</th>
+                            <th>Lugar</th>
+                            <th>Monto</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in this.Gastos.DetalleGastos)
+                        {
+                            <tr>
+                                <td>@item.Categoria</td>
+                                <td>@item.Lugar</td>
+                                <td>@item.Monto</td>
+                                <td>
+                                    <button type="button" class="btn btn-danger" @onclick=@(() => EliminarDetalle(item))>
+                                        <i class="oi oi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-md-3">
+                        <label>Total</label>
+                        <InputNumber disable @bind-Value="@Gastos.Total" class="form-control" />
+                    </div>
+            </div>
+        </div>
+        </div>
+        <div class="card-footer d-flex justify-content-center">
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-primary" @onclick="Nuevo">
+                    Nuevo <i class="oi oi-file"></i>
+                </button>
+                <button type="button" class="btn btn-outline-success" @onclick="Guardar">
+                    Guardar <i class="oi oi-document"></i>
+                </button>
+                <button type="button" class="btn btn-outline-danger" @onclick="Eliminar">
+                    Eliminar <i class="oi oi-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public int GastoId { get; set; }
+    public Gastos Gastos { get; set; } = new Gastos();
+    public GastosDetalle detalle { get; set; } = new GastosDetalle();
+    public string Mensaje { get; set; } = string.Empty;
+    public List<string> CategoriasList = new List<string> { "Transporte", "Casa", "Internet" };
+    public List<string> Metodos = new List<string> { "Tarjeta", "Efectivo"};
+    public double dineroCuenta { get; set; } = 0;
+
+    protected async override Task OnInitializedAsync()
+    {
+        if (GastoId > 0)
+        {
+            this.Gastos.GastoId = GastoId;
+            await this.Buscar();
+        }
+    }
+
+    public async void ExistenciaDinero(int cuentaId)
+    {
+        var cuenta = await httpClient.GetFromJsonAsync<Cuenta>($"api/Cuenta/{1}");
+        if (cuenta != null)
+        {
+            dineroCuenta = cuenta.Monto;
+        }
+    }
+
+
+    public void Nuevo()
+    {
+        Gastos = new Gastos();
+        Mensaje = string.Empty;
+        NavigationManager.NavigateTo("/gastos");
+    }
+
+    bool Validar()
+    {
+        bool validar = true;
+
+        if (Gastos.DetalleGastos.Count < 1)
+        {
+            notificationServices.ShowNotification("Error", "Debe agregar al menos un detalle para guardar", NotificationSeverity.Error);
+            validar = false;
+        }
+        if (string.IsNullOrEmpty(Gastos.Descripcion))
+        {
+            notificationServices.ShowNotification("Error", "Debe rellenar el campo de la descripcion", NotificationSeverity.Error);
+            validar = false;
+        }
+
+        return validar;
+    }
+
+    public async Task Guardar()
+    {
+        if(!Validar()) { return; }
+
+        Gastos.DetalleGastos = this.Gastos.DetalleGastos.ToList();
+
+        if(GastoId > 0)
+        {
+            await httpClient.PutAsJsonAsync($"api/Gastos", Gastos);
+        }
+        else
+        {
+            await httpClient.PostAsJsonAsync($"api/Gastos", Gastos);
+        }
+
+        notificationServices.ShowNotification("Guardado", "El registro se ha guardado con éxito", NotificationSeverity.Success);
+        Nuevo();
+
+    }
+
+    async Task<bool> Buscar()
+    {
+        try
+        {
+            var Encontrado = await httpClient.GetFromJsonAsync<Gastos>($"api/Gastos/{Gastos.GastoId}");
+
+            if (Encontrado != null)
+            {
+                this.Gastos = Encontrado;
+                this.Gastos.DetalleGastos = Encontrado.DetalleGastos.ToList();
+                StateHasChanged();
+                notificationServices.ShowNotification("Encontrado", "El Id a sido encontrado con exito", NotificationSeverity.Success);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        catch
+        {
+            notificationServices.ShowNotification("Error", "El Id NO a sido encontrado", NotificationSeverity.Error);
+            return false;
+        }
+    }
+
+    async Task Eliminar()
+    {
+        using var response = await httpClient.DeleteAsync($"api/Gastos/{Gastos.GastoId}");
+        if (!response.IsSuccessStatusCode)
+        {
+            Mensaje = response.ReasonPhrase ?? "error";
+            return;
+        }
+        else
+            notificationServices.ShowNotification("Eliminado", "El registro se ha eliminado con éxito", NotificationSeverity.Success);
+        Nuevo();
+    }
+
+    public async void ActualizarDinero(int cuentaId, double monto)
+    {
+        var cuenta = await httpClient.GetFromJsonAsync<Cuenta>($"api/Cuenta/{1}");
+        if(cuenta != null)
+        {
+            cuenta.Monto -= monto;
+        }
+
+
+    }
+
+    public async Task  AgregarDetalle()
+    {
+        if(string.IsNullOrEmpty(detalle.Categoria) || string.IsNullOrEmpty(detalle.Lugar) || detalle.Monto <= 0)
+        {
+            notificationServices.ShowNotification("Advertencia", "Para registrar un detalle debe llenar correctamente los campos: Categoria, monto y lugar", NotificationSeverity.Warning);
+            return;
+        }
+        var cuenta = await httpClient.GetFromJsonAsync<Cuenta>($"api/Cuenta/{1}");
+        if(Gastos != null)
+        {
+            if (detalle.Monto > cuenta.Monto)
+            {
+                notificationServices.ShowNotification("Alerta", "El el monot no puede ser mayor que el dinero en cuenta", NotificationSeverity.Warning);
+                return;
+            }
+            this.Gastos.DetalleGastos.Add(this.detalle);
+            ActualizarDinero(1, detalle.Monto);
+            Gastos.Total = Gastos.DetalleGastos.Sum(p => p.Monto);
+            this.detalle = new GastosDetalle();
+        }
+    }
+
+    void EliminarDetalle(GastosDetalle detalleBorrado)
+    {
+        Gastos.DetalleGastos.Remove(detalleBorrado);
+        Gastos.Total = Gastos.DetalleGastos.Sum(p => p.Monto);
+
+        ActualizarDinero(1, - detalle.Monto);
+    }
+
+}

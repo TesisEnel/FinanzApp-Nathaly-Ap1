@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FinanzApp.Server.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20230731030343_Inicial")]
+    [Migration("20230731195243_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -42,6 +42,31 @@ namespace FinanzApp.Server.Migrations
                     b.HasKey("AhorroId");
 
                     b.ToTable("Ahorros");
+                });
+
+            modelBuilder.Entity("Cuenta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("Monto")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("NombreCliente")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cuenta");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Monto = 0.0,
+                            NombreCliente = "Nathaly Goris"
+                        });
                 });
 
             modelBuilder.Entity("Deudas", b =>
@@ -78,8 +103,19 @@ namespace FinanzApp.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateOnly>("Fecha")
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("MetodoDePago")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<double>("Total")
+                        .HasColumnType("REAL");
 
                     b.HasKey("GastoId");
 
@@ -95,11 +131,11 @@ namespace FinanzApp.Server.Migrations
                     b.Property<string>("Categoria")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Descripcion")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("GastosId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Lugar")
+                        .HasColumnType("TEXT");
 
                     b.Property<double>("Monto")
                         .HasColumnType("REAL");

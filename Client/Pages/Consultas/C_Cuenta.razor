@@ -1,0 +1,80 @@
+@page "/Consultacuenta"
+@inject HttpClient httpClient
+
+
+
+<EditForm Model="L_Cuentas">
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h4>Consulta de Cuenta</h4>
+            </div>
+
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <InputText @bind-Value="Asunto" class="form-control" aria-describedby="buscarButton" />
+                    <button @onclick="Buscar" class="btn btn-outline-primary" type="button" id="buscarButton">
+                        <i class="oi oi-magnifying-glass" />
+                    </button>
+                </div>
+
+                <table class="table table-responsive table-condensed table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Nombre Cliente</th>
+                            <th>Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var cuenta in L_Cuentas)
+                        {
+                            <tr>
+                                <td>@cuenta.Id</td>
+                                <td>@cuenta.NombreCliente</td>
+                                <td>@cuenta.Monto</td>
+                              
+                                <td><a class="btn btn-outline-primary" href="ocupacion/@cuenta.Id">Ver</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer">
+                <div class="form-row justify-content-sm-between" aria-orientation="vertical">
+                    <div class="col-3">
+                        <label for="CantidaRegistro" class="col-form-label"><strong>Filas</strong>&nbsp;</label>
+                        <input id="CantidaRegistro" @bind-value="@Conteo" disabled class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code
+{
+    public string Asunto  { get; set; } = "";
+    public int Conteo { get; set; } = 0;
+    public Cuenta cuentas { get; set; } = new Cuenta();
+    public List<Cuenta> L_Cuentas { get; set; } = new List<Cuenta>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var cuentas = await httpClient.GetFromJsonAsync<List<Cuenta>>($"api/Cuenta");
+
+        if(cuentas is not null)
+        {
+            L_Cuentas = cuentas;
+        }
+    }
+    public async Task Buscar()
+    {
+        L_Cuentas = await httpClient.GetFromJsonAsync<List<Cuenta>>($"api/Cuenta");
+
+        Conteo = L_Cuentas != null ? L_Cuentas!.Count() : 0;
+        StateHasChanged();
+    }  
+}

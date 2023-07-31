@@ -7,4 +7,17 @@ public class Context : DbContext
        public DbSet<Deudas> Deudas {get; set;} 
        public DbSet<Ingresos> Ingresos {get; set;}
        public DbSet<Ahorros> Ahorros {get; set;}
+       public DbSet<Cuenta> Cuenta {get; set;}
+
+       protected override void OnModelCreating(ModelBuilder modelBuilder)
+      {
+        modelBuilder.Entity<Cuenta>().HasData(
+            new Cuenta
+            {
+                Id = 1,
+                NombreCliente = "Nathaly Goris",
+                Monto = 0
+            }
+        );
+      }
     }

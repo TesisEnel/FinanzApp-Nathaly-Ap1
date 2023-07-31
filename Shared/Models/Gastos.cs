@@ -3,9 +3,14 @@ public class Gastos
 {
     [Key]
     public int GastoId { get; set; }
-  
+
     [Required(ErrorMessage ="La fecha es requerida")]
-    public DateOnly Fecha { get; set; } = DateOnly.FromDateTime(DateTime.Now);
+    public DateTime Fecha { get; set; }
+    [Required(ErrorMessage ="La descripción es requerida")]
+    public string? Descripcion { get; set; }
+    [Required(ErrorMessage ="El método de pago es requerida")]
+    public string? MetodoDePago { get; set; }
+    public double Total { get; set; }
     public List<GastosDetalle> DetalleGastos { get; set; }= new List<GastosDetalle> ();
-   
+
 }

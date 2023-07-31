@@ -28,6 +28,20 @@ namespace FinanzApp.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Cuenta",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    NombreCliente = table.Column<string>(type: "TEXT", nullable: true),
+                    Monto = table.Column<double>(type: "REAL", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Cuenta", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Deudas",
                 columns: table => new
                 {
@@ -50,7 +64,10 @@ namespace FinanzApp.Server.Migrations
                 {
                     GastoId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Fecha = table.Column<DateOnly>(type: "TEXT", nullable: false)
+                    Fecha = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Descripcion = table.Column<string>(type: "TEXT", nullable: false),
+                    MetodoDePago = table.Column<string>(type: "TEXT", nullable: false),
+                    Total = table.Column<double>(type: "REAL", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,8 +97,8 @@ namespace FinanzApp.Server.Migrations
                     DetalleId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     GastosId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Descripcion = table.Column<string>(type: "TEXT", nullable: true),
                     Categoria = table.Column<string>(type: "TEXT", nullable: true),
+                    Lugar = table.Column<string>(type: "TEXT", nullable: true),
                     Monto = table.Column<double>(type: "REAL", nullable: false)
                 },
                 constraints: table =>
@@ -95,6 +112,11 @@ namespace FinanzApp.Server.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Cuenta",
+                columns: new[] { "Id", "Monto", "NombreCliente" },
+                values: new object[] { 1, 0.0, "Nathaly Goris" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_GastosDetalle_GastosId",
                 table: "GastosDetalle",
@@ -106,6 +128,9 @@ namespace FinanzApp.Server.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Ahorros");
+
+            migrationBuilder.DropTable(
+                name: "Cuenta");
 
             migrationBuilder.DropTable(
                 name: "Deudas");
