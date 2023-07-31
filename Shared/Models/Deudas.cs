@@ -5,13 +5,13 @@ public class Deudas
     public int DeudaId { get; set; }
   
     [Required(ErrorMessage ="La fecha es requerida")]
-    public DateTime Fecha { get; set; }
+    public DateOnly Fecha { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
     [Required(ErrorMessage ="El nombre del acreedor es requerido")]
     public string? NombreAcreedor { get; set; }
 
     [Required(ErrorMessage ="El tipo de deuda es obligatoria")]
-    public string? TipoDeDeuda { get; set; }
+    public string? TipoDeuda { get; set; }
 
     [Required]
     [Range(minimum: 1, maximum: double.MaxValue, ErrorMessage = "Ingrese un monto mayor a 0.")]

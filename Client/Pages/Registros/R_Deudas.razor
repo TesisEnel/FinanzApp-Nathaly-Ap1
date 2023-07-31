@@ -1,52 +1,52 @@
-@page "/registro-ingresos"
-@page "/registro-ingresos/{IngresoId:int}"
+@page "/registro-Deudas"
+@page "/registro-Deudas/{DeudaId:int}"
 @inject HttpClient httpClient
 @inject NotificationService notificationServices
 @inject NavigationManager NavigationManager
 
 
-<h3 class="text-primary">Registro de Ingresos</h3>
+<h3 class="text-primary">Registro de Deudas</h3>
 
-<EditForm Model="ingresos">
+<EditForm Model="deudas">
     <DataAnnotationsValidator />
     <div class="col-md-4">
         <label>ID</label>
             <div class="input-group">
-                <InputNumber @bind-Value="ingresos.IngresoId" class="form-control" />
+                <InputNumber @bind-Value="deudas.DeudaId" class="form-control" />
                 <button type="button" class="btn btn-outline-primary oi oi-magnifying-glass" @onclick="Buscar"></button>
             </div>
     </div>
     <div class="form-group">
         <label for="Fecha" class="text-muted">Fecha:</label>
-        <InputDate required id="Fecha" @bind-Value="ingresos.Fecha" class="form-control" />
-        <ValidationMessage For="@(() => ingresos.Fecha)" />
+        <InputDate required id="Fecha" @bind-Value="deudas.Fecha" class="form-control" />
+        <ValidationMessage For="@(() => deudas.Fecha)" />
     </div>
     <div class="form-group">
-        <label for="Monto" class="text-muted">Monto:</label>
-        <InputNumber required id="Monto" @bind-Value="ingresos.Monto" class="form-control" />
-        <ValidationMessage For="@(() => ingresos.Monto)" />
-    </div>
+        <label for="NombreAcreedor" class="text-muted">NombreAcreedor:</label>
+        <InputText required id="NombreAcreedor" @bind-Value="deudas.NombreAcreedor" class="form-control" />
+        <ValidationMessage For="@(() => deudas.NombreAcreedor)" />
+    </div> 
     <div class="form-group">
-        <label for="Categoria" class="text-muted">Categoría:</label>
-        <InputSelect required id="Categoria" @bind-Value="ingresos.Categoria" class="form-control">
-            @if (CategoriaIngresos != null)
+        <label for="TipoDeuda" class="text-muted">TipoDeuda:</label>
+        <InputSelect required id="Categoria" @bind-Value="deudas.TipoDeuda" class="form-control">
+            @if (TipoDeuda != null)
             {
-                if (string.IsNullOrEmpty(ingresos.Categoria))
+                if (string.IsNullOrEmpty(deudas.TipoDeuda))
                 {
-                    ingresos.Categoria = CategoriaIngresos.FirstOrDefault();
+                    deudas.TipoDeuda = TipoDeuda.FirstOrDefault();
                 }
-                @foreach (var item in CategoriaIngresos)
+                @foreach (var item in TipoDeuda)
                 {
                     <option value="@item">@item</option>
                 }
             }
         </InputSelect>
-    </div>
+    </div> 
     <div class="form-group">
-        <label for="Descripcion" class="text-muted">Descripción:</label>
-        <InputText required id="Descripcion" @bind-Value="ingresos.Descripcion" class="form-control" />
-        <ValidationMessage For="@(() => ingresos.Descripcion)" />
-    </div>    
+        <label for="MontoTotal" class="text-muted">MontoTotal:</label>
+        <InputNumber required id="MontoTotal" @bind-Value="deudas.MontoTotal" class="form-control" />
+        <ValidationMessage For="@(() => deudas.MontoTotal)" />
+    </div>  
     <div class="card-footer d-flex justify-content-center">
         <div class="btn-group">
             <button type="button" class="btn btn-outline-primary" @onclick="Nuevo">Nuevo <i class="oi oi-file" /></button>
@@ -59,10 +59,17 @@
 @code {
     // P
     [Parameter]
-    public int IngresoId { get; set; }
-    public Ingresos ingresos { get; set; } = new Ingresos(); 
+    public int DeudaId { get; set; }
+    public Deudas deudas { get; set; } = new Deudas(); 
     public string Mensaje { get; set; } = string.Empty;
-    public List<string> CategoriaIngresos = new List<string> { "Deposito", "Sueldo", "Ahorros"};
+    public List<string> TipoDeuda = new List<string> { 
+    "Préstamo personal",
+    "Tarjeta de crédito",
+    "Préstamo hipotecario",
+    "Deuda estudiantil",
+    "Deuda médica",
+    "Deuda fiscal (por ejemplo, impuestos adeudados)",
+    "Deuda de servicios públicos (por ejemplo, electricidad, agua)"};
     private void RegistrarIngreso()
     {
 
@@ -70,9 +77,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if(IngresoId>0)
+        if(DeudaId>0)
         {
-            this.ingresos.IngresoId = IngresoId;
+            this.deudas.DeudaId = DeudaId;
             await this.Buscar();
         }
     }
@@ -82,11 +89,11 @@
     {
         try
         {
-            var ingresoEncontrado = await httpClient.GetFromJsonAsync<Ingresos>($"api/Ingresos/{ingresos.IngresoId}");
+            var deudaencontrada = await httpClient.GetFromJsonAsync<Deudas>($"api/Deudas/{deudas.DeudaId}");
 
-            if (ingresoEncontrado != null)
+            if (deudaencontrada != null)
             {
-                this.ingresos = ingresoEncontrado;
+                this.deudas = deudaencontrada;
                 StateHasChanged();
                 notificationServices.ShowNotification("Encontrado", "El Id a sido encontrado con exito", NotificationSeverity.Success);
                 return true;
@@ -107,14 +114,14 @@
     {
         bool validar = true;
 
-        if (ingresos.Monto <= 0)
+        if (deudas.MontoTotal <= 0)
         {
             notificationServices.ShowNotification("Error", "El monto debe ser mayor a 0", NotificationSeverity.Error);
             validar = false;
         }
-        if (string.IsNullOrEmpty(ingresos.Descripcion))
+        if (string.IsNullOrEmpty(deudas.NombreAcreedor))
         {
-            notificationServices.ShowNotification("Error", "Debe describir una descripción", NotificationSeverity.Error);
+            notificationServices.ShowNotification("Error", "Debe especificar el nombre del acreedor", NotificationSeverity.Error);
             validar = false;
         }
 
@@ -123,18 +130,18 @@
 
     public async Task Guardar()
     {
-        using var response = await httpClient.PostAsJsonAsync("api/Ingresos", ingresos);
+        using var response = await httpClient.PostAsJsonAsync("api/Deudas", deudas);
 
         if (Validar())
         {
             if (response.IsSuccessStatusCode)
             {
-                var Devuelta = await response.Content.ReadFromJsonAsync<Ingresos>();
+                var Devuelta = await response.Content.ReadFromJsonAsync<Deudas>();
 
                 if (Devuelta != null)
                 {
                     notificationServices.ShowNotification("Guardado", "El registro se ha guardado con éxito", NotificationSeverity.Success);
-                    ingresos = Devuelta;
+                    deudas = Devuelta;
                     Nuevo();
                 }
                 else
@@ -151,13 +158,13 @@
     }
     public void Nuevo()
     {
-        this.ingresos = new Ingresos();
+        this.deudas = new Deudas();
         Mensaje = string.Empty;
-        NavigationManager.NavigateTo("/registro-ingresos");
+        NavigationManager.NavigateTo("/registro-deudas");
     }
     public async Task Eliminar()
     {
-        using var response = await httpClient.DeleteAsync($"api/Ingresos/{ingresos.IngresoId}");
+        using var response = await httpClient.DeleteAsync($"api/Deudas/{deudas.DeudaId}");
         if (!response.IsSuccessStatusCode)
         {
             Mensaje = response.ReasonPhrase ?? "error";

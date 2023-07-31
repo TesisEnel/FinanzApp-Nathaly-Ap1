@@ -1,52 +1,52 @@
-@page "/registro-ingresos"
-@page "/registro-ingresos/{IngresoId:int}"
+@page "/registro-ahorro"
+@page "/registro-ahorro/{AhorroId:int}"
 @inject HttpClient httpClient
 @inject NotificationService notificationServices
 @inject NavigationManager NavigationManager
 
 
-<h3 class="text-primary">Registro de Ingresos</h3>
+<h3 class="text-primary">Registro de Ahorros</h3>
 
-<EditForm Model="ingresos">
+<EditForm Model="ahorros">
     <DataAnnotationsValidator />
     <div class="col-md-4">
         <label>ID</label>
             <div class="input-group">
-                <InputNumber @bind-Value="ingresos.IngresoId" class="form-control" />
+                <InputNumber @bind-Value="ahorros.AhorroId" class="form-control" />
                 <button type="button" class="btn btn-outline-primary oi oi-magnifying-glass" @onclick="Buscar"></button>
             </div>
     </div>
     <div class="form-group">
+        <label for="NombreMeta" class="text-muted">NombreMeta:</label>
+        <InputText required id="NombreMeta" @bind-Value="ahorros.NombreMeta" class="form-control" />
+        <ValidationMessage For="@(() => ahorros.NombreMeta)" />
+    </div> 
+    <div class="form-group">
         <label for="Fecha" class="text-muted">Fecha:</label>
-        <InputDate required id="Fecha" @bind-Value="ingresos.Fecha" class="form-control" />
-        <ValidationMessage For="@(() => ingresos.Fecha)" />
+        <InputDate required id="Fecha" @bind-Value="ahorros.Fecha" class="form-control" />
+        <ValidationMessage For="@(() => ahorros.Fecha)" />
     </div>
     <div class="form-group">
-        <label for="Monto" class="text-muted">Monto:</label>
-        <InputNumber required id="Monto" @bind-Value="ingresos.Monto" class="form-control" />
-        <ValidationMessage For="@(() => ingresos.Monto)" />
+        <label for="MontoMeta" class="text-muted">MontoMeta:</label>
+        <InputNumber required id="MontoMeta" @bind-Value="ahorros.MontoMeta" class="form-control" />
+        <ValidationMessage For="@(() => ahorros.MontoMeta)" />
     </div>
     <div class="form-group">
-        <label for="Categoria" class="text-muted">Categoría:</label>
-        <InputSelect required id="Categoria" @bind-Value="ingresos.Categoria" class="form-control">
-            @if (CategoriaIngresos != null)
+        <label for="FrecuenciaAhorro" class="text-muted">FrecuenciaAhorro:</label>
+        <InputSelect required id="Categoria" @bind-Value="ahorros.FrecuenciaAhorro" class="form-control">
+            @if (FrecuenciaAhorro != null)
             {
-                if (string.IsNullOrEmpty(ingresos.Categoria))
+                if (string.IsNullOrEmpty(ahorros.FrecuenciaAhorro))
                 {
-                    ingresos.Categoria = CategoriaIngresos.FirstOrDefault();
+                    ahorros.FrecuenciaAhorro = FrecuenciaAhorro.FirstOrDefault();
                 }
-                @foreach (var item in CategoriaIngresos)
+                @foreach (var item in FrecuenciaAhorro)
                 {
                     <option value="@item">@item</option>
                 }
             }
         </InputSelect>
-    </div>
-    <div class="form-group">
-        <label for="Descripcion" class="text-muted">Descripción:</label>
-        <InputText required id="Descripcion" @bind-Value="ingresos.Descripcion" class="form-control" />
-        <ValidationMessage For="@(() => ingresos.Descripcion)" />
-    </div>    
+    </div>   
     <div class="card-footer d-flex justify-content-center">
         <div class="btn-group">
             <button type="button" class="btn btn-outline-primary" @onclick="Nuevo">Nuevo <i class="oi oi-file" /></button>
@@ -59,10 +59,18 @@
 @code {
     // P
     [Parameter]
-    public int IngresoId { get; set; }
-    public Ingresos ingresos { get; set; } = new Ingresos(); 
+    public int AhorroId { get; set; }
+    public Ahorros ahorros { get; set; } = new Ahorros(); 
     public string Mensaje { get; set; } = string.Empty;
-    public List<string> CategoriaIngresos = new List<string> { "Deposito", "Sueldo", "Ahorros"};
+    public List<string> FrecuenciaAhorro = new List<string> { 
+    "Diario", 
+    "Semanal", 
+    "Quincenal", 
+    "Mensual", 
+    "Bimesensual", 
+    "Trimestral", 
+    "Semestral", 
+    "Anual"};
     private void RegistrarIngreso()
     {
 
@@ -70,9 +78,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if(IngresoId>0)
+        if(AhorroId>0)
         {
-            this.ingresos.IngresoId = IngresoId;
+            this.ahorros.AhorroId = AhorroId;
             await this.Buscar();
         }
     }
@@ -82,11 +90,11 @@
     {
         try
         {
-            var ingresoEncontrado = await httpClient.GetFromJsonAsync<Ingresos>($"api/Ingresos/{ingresos.IngresoId}");
+            var ahorroEncontrado = await httpClient.GetFromJsonAsync<Ahorros>($"api/Ahorros/{ahorros.AhorroId}");
 
-            if (ingresoEncontrado != null)
+            if (ahorroEncontrado != null)
             {
-                this.ingresos = ingresoEncontrado;
+                this.ahorros = ahorroEncontrado;
                 StateHasChanged();
                 notificationServices.ShowNotification("Encontrado", "El Id a sido encontrado con exito", NotificationSeverity.Success);
                 return true;
@@ -107,14 +115,15 @@
     {
         bool validar = true;
 
-        if (ingresos.Monto <= 0)
-        {
-            notificationServices.ShowNotification("Error", "El monto debe ser mayor a 0", NotificationSeverity.Error);
-            validar = false;
-        }
-        if (string.IsNullOrEmpty(ingresos.Descripcion))
+        if (string.IsNullOrEmpty(ahorros.NombreMeta))
         {
             notificationServices.ShowNotification("Error", "Debe describir una descripción", NotificationSeverity.Error);
+            validar = false;
+        }
+
+        if (ahorros.MontoMeta <= 0)
+        {
+            notificationServices.ShowNotification("Error", "El monto debe ser mayor a 0", NotificationSeverity.Error);
             validar = false;
         }
 
@@ -123,18 +132,18 @@
 
     public async Task Guardar()
     {
-        using var response = await httpClient.PostAsJsonAsync("api/Ingresos", ingresos);
+        using var response = await httpClient.PostAsJsonAsync("api/Ahorros", ahorros);
 
         if (Validar())
         {
             if (response.IsSuccessStatusCode)
             {
-                var Devuelta = await response.Content.ReadFromJsonAsync<Ingresos>();
+                var Devuelta = await response.Content.ReadFromJsonAsync<Ahorros>();
 
                 if (Devuelta != null)
                 {
                     notificationServices.ShowNotification("Guardado", "El registro se ha guardado con éxito", NotificationSeverity.Success);
-                    ingresos = Devuelta;
+                    ahorros = Devuelta;
                     Nuevo();
                 }
                 else
@@ -151,13 +160,13 @@
     }
     public void Nuevo()
     {
-        this.ingresos = new Ingresos();
+        this.ahorros = new Ahorros();
         Mensaje = string.Empty;
-        NavigationManager.NavigateTo("/registro-ingresos");
+        NavigationManager.NavigateTo("/registro-ahorro");
     }
     public async Task Eliminar()
     {
-        using var response = await httpClient.DeleteAsync($"api/Ingresos/{ingresos.IngresoId}");
+        using var response = await httpClient.DeleteAsync($"api/Ahorros/{ahorros.AhorroId}");
         if (!response.IsSuccessStatusCode)
         {
             Mensaje = response.ReasonPhrase ?? "error";

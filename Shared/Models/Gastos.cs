@@ -5,7 +5,7 @@ public class Gastos
     public int GastoId { get; set; }
   
     [Required(ErrorMessage ="La fecha es requerida")]
-    public DateTime Fecha { get; set; }
+    public DateOnly Fecha { get; set; } = DateOnly.FromDateTime(DateTime.Now);
     public List<GastosDetalle> DetalleGastos { get; set; }= new List<GastosDetalle> ();
    
 }

@@ -1,0 +1,84 @@
+@page "/ConsultaIngreso"
+@inject HttpClient httpClient
+
+
+
+<EditForm Model="L_Ingresos">
+
+    <div class="container">
+        <div class="card shadow-lg">
+            <div class="card-header">
+                <h4>Consulta de Ingresos</h4>
+            </div>
+
+            <div class="card-body">
+                <div class="input-group mb-3">
+                    <InputText @bind-Value="Asunto" class="form-control" aria-describedby="buscarButton" />
+                    <button @onclick="Buscar" class="btn btn-outline-primary" type="button" id="buscarButton">
+                        <i class="oi oi-magnifying-glass" />
+                    </button>
+                </div>
+
+                <table class="table table-responsive table-condensed table-bordered table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>IngresoId</th>
+                            <th>Fecha</th>
+                            <th>Monto</th>
+                            <th>Descripcion</th>
+                            <th>Categoria</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ingreso in L_Ingresos)
+                        {
+                            <tr>
+                                <td>@ingreso.IngresoId</td>
+                                <td>@ingreso.Fecha</td>
+                                <td>@ingreso.Monto</td>
+                                <td>@ingreso.Descripcion</td>
+                                <td>@ingreso.Categoria</td>
+                                
+                                <td><a class="btn btn-outline-primary" href="ocupacion/@ingreso.Fecha">Ver</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer">
+                <div class="form-row justify-content-sm-between" aria-orientation="vertical">
+                    <div class="col-3">
+                        <label for="CantidaRegistro" class="col-form-label"><strong>Filas</strong>&nbsp;</label>
+                        <input id="CantidaRegistro" @bind-value="@Conteo" disabled class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code
+{
+    public string Asunto  { get; set; } = "";
+    public int Conteo { get; set; } = 0;
+    public Ingresos ingresos { get; set; } = new Ingresos();
+    public List<Ingresos> L_Ingresos { get; set; } = new List<Ingresos>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var ingreso = await httpClient.GetFromJsonAsync<List<Ingresos>>($"api/Ingresos");
+
+        if(ingreso is not null)
+        {
+            L_Ingresos = ingreso;
+        }
+    }
+    public async Task Buscar()
+    {
+        L_Ingresos = await httpClient.GetFromJsonAsync<List<Ingresos>>($"api/Ingresos");
+
+        Conteo = L_Ingresos != null ? L_Ingresos!.Count() : 0;
+        StateHasChanged();
+    }  
+}

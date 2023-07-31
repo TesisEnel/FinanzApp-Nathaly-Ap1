@@ -8,21 +8,14 @@ public class Ahorros
     public string? NombreMeta { get; set; }
 
     [Required(ErrorMessage ="La fecha es requerida")]
-    public DateTime Fecha { get; set; }
+    public DateOnly Fecha { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
     [Required]
     [Range(minimum: 1, maximum: double.MaxValue, ErrorMessage = "Ingrese un monto mayor a 0.")]
     public double MontoMeta { get; set; }
 
-    [Required]
-    [Range(minimum: 1, maximum: double.MaxValue, ErrorMessage = "Ingrese un porcentaje mayor a 0.")]
-    public int  PorcentajeProgreso { get; set; }
-
     [Required(ErrorMessage ="La frecuencia de ahorro es requerida")]
     public string? FrecuenciaAhorro{ get; set; }
 
-    [Required]
-    [Range(minimum: 1, maximum: double.MaxValue, ErrorMessage = "Ingrese un monto mayor a 0.")]
-    public double AgregarMonto { get; set; }
     
 }

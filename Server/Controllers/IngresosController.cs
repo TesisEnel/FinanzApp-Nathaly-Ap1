@@ -14,11 +14,34 @@ using Microsoft.EntityFrameworkCore;
         {
             _context = context;
         }
-        public bool Existe(int IngresoId)
-        {   
-            return (_context.Ingresos?.Any(e => e.IngresoId == IngresoId)).GetValueOrDefault();
+        public bool Exists(int id)
+        {
+            return _context.Ingresos.Any(x => x.IngresoId == id);
         }
-         [HttpGet]
+
+        public async Task<bool> Insert(Ingresos ingreso)
+        {
+            await _context.Ingresos.AddAsync(ingreso);
+            bool salida = await _context.SaveChangesAsync() > 0;
+            _context.Entry(ingreso).State = EntityState.Detached;
+            return salida;
+        }
+
+        public async Task<bool> Update(Ingresos ingreso)
+        {
+            var existe = await _context.Ingresos.FindAsync(ingreso.IngresoId);
+
+            if (existe != null)
+            {
+                _context.Entry(existe).CurrentValues.SetValues(ingreso);
+                bool salida = await _context.SaveChangesAsync() > 0;
+                _context.Entry(ingreso).State |= EntityState.Detached;
+                return salida;
+            }
+
+            return false;
+        }
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Ingresos>>> Obtener()
         {
             if(_context.Ingresos == null)
@@ -39,32 +62,23 @@ using Microsoft.EntityFrameworkCore;
                 return NotFound();
             }
 
-            var ingresoId = await _context.Ingresos.FindAsync(IngresoId);
+            var encontrado = await _context.Ingresos.Where(e => e.IngresoId == IngresoId).FirstOrDefaultAsync();
 
-            if(ingresoId == null)
+        if (encontrado == null)
             {
                 return NotFound();
             }
-            return ingresoId;
+            return encontrado;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Ingresos>> PostIngresos(Ingresos ingresos)
+        public async Task<IActionResult> PostIngresos(Ingresos ingresos)
         {
-            if(!Existe(ingresos.IngresoId))
-            {
-               await _context.Ingresos.AddAsync(ingresos);
-               await _context.SaveChangesAsync();
-                _context.Entry(ingresos).State = EntityState.Detached;
-            }
+            if (!Exists(ingresos.IngresoId))
+                await Insert(ingresos);
             else
-            {
-                _context.Ingresos.Update(ingresos);
-                await _context.SaveChangesAsync();
-                _context.Entry(ingresos).State = EntityState.Detached;
-            }
+                await Update(ingresos);
 
-            await _context.SaveChangesAsync();
             return Ok(ingresos);
         }
 
@@ -90,4 +104,3 @@ using Microsoft.EntityFrameworkCore;
         }
 
     }
-    

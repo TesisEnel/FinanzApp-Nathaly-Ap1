@@ -22,10 +22,7 @@ namespace FinanzApp.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<double>("AgregarMonto")
-                        .HasColumnType("REAL");
-
-                    b.Property<DateTime>("Fecha")
+                    b.Property<DateOnly>("Fecha")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("FrecuenciaAhorro")
@@ -39,9 +36,6 @@ namespace FinanzApp.Server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("PorcentajeProgreso")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("AhorroId");
 
                     b.ToTable("Ahorros");
@@ -53,7 +47,7 @@ namespace FinanzApp.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("Fecha")
+                    b.Property<DateOnly>("Fecha")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("FechaVencimiento")
@@ -66,7 +60,7 @@ namespace FinanzApp.Server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("TipoDeDeuda")
+                    b.Property<string>("TipoDeuda")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -81,7 +75,7 @@ namespace FinanzApp.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("Fecha")
+                    b.Property<DateOnly>("Fecha")
                         .HasColumnType("TEXT");
 
                     b.HasKey("GastoId");
@@ -128,7 +122,7 @@ namespace FinanzApp.Server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("Fecha")
+                    b.Property<DateOnly>("Fecha")
                         .HasColumnType("TEXT");
 
                     b.Property<double>("Monto")

@@ -18,11 +18,9 @@ namespace FinanzApp.Server.Migrations
                     AhorroId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     NombreMeta = table.Column<string>(type: "TEXT", nullable: false),
-                    Fecha = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Fecha = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     MontoMeta = table.Column<double>(type: "REAL", nullable: false),
-                    PorcentajeProgreso = table.Column<int>(type: "INTEGER", nullable: false),
-                    FrecuenciaAhorro = table.Column<string>(type: "TEXT", nullable: false),
-                    AgregarMonto = table.Column<double>(type: "REAL", nullable: false)
+                    FrecuenciaAhorro = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -35,9 +33,9 @@ namespace FinanzApp.Server.Migrations
                 {
                     DeudaId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Fecha = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Fecha = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     NombreAcreedor = table.Column<string>(type: "TEXT", nullable: false),
-                    TipoDeDeuda = table.Column<string>(type: "TEXT", nullable: false),
+                    TipoDeuda = table.Column<string>(type: "TEXT", nullable: false),
                     MontoTotal = table.Column<double>(type: "REAL", nullable: false),
                     FechaVencimiento = table.Column<DateTime>(type: "TEXT", nullable: false)
                 },
@@ -52,7 +50,7 @@ namespace FinanzApp.Server.Migrations
                 {
                     GastoId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Fecha = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    Fecha = table.Column<DateOnly>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -65,7 +63,7 @@ namespace FinanzApp.Server.Migrations
                 {
                     IngresoId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Fecha = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Fecha = table.Column<DateOnly>(type: "TEXT", nullable: false),
                     Monto = table.Column<double>(type: "REAL", nullable: false),
                     Descripcion = table.Column<string>(type: "TEXT", nullable: false),
                     Categoria = table.Column<string>(type: "TEXT", nullable: false)
