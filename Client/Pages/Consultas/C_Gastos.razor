@@ -38,6 +38,8 @@
                                 <td>@gasto.Descripcion</td>
                                 <td>@gasto.MetodoDePago</td>
                                 <td>@gasto.Total</td>
+                               
+                                
                                 
                                 <td><a class="btn btn-outline-primary" href="ocupacion/@gasto.Fecha">Ver</a></td>
                             </tr>
@@ -63,7 +65,9 @@
     public string Asunto  { get; set; } = "";
     public int Conteo { get; set; } = 0;
     public Gastos gastos { get; set; } = new Gastos();
+    public GastosDetalle gastosDetalle { get; set; } = new GastosDetalle();
     public List<Gastos> L_Gastos { get; set; } = new List<Gastos>();
+    public List<GastosDetalle> L_GastosDetalle { get; set; } = new List<GastosDetalle>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -78,7 +82,7 @@
     {
         L_Gastos = await httpClient.GetFromJsonAsync<List<Gastos>>($"api/Gastos");
 
-        Conteo = L_Gastos != null ? L_Gastos!.Count() : 0;
+        Conteo = L_Gastos  != null ? L_Gastos!.Count() : 0;
         StateHasChanged();
     }  
 }
