@@ -2,61 +2,38 @@
 @inject HttpClient httpClient
 
 
+<h1 class="text-center">Consulta de Ahorros</h1>
 
-<EditForm Model="L_Ahorros">
+<div>
+    @if (L_Ahorros == null)
+    {
+        <p><em>Sin datos para mostrar...</em></p>
+    }
+    else
+    {
+        <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+            FilterMode="FilterMode.Advanced" AllowPaging="true" PageSize="4" PagerHorizontalAlign="HorizontalAlign.Left"
+            AllowSorting="true" Data="@L_Ahorros" ColumnWidth="180px">
+            <Columns>
+                <RadzenGridColumn TItem="Ahorros" Property="AhorroId" Title="ID" />
+                <RadzenGridColumn TItem="Ahorros" Property="NombreMeta" Title="Nombre Meta" />
+                <RadzenGridColumn TItem="Ahorros" Property="Fecha" Title="Fecha" />
+                <RadzenGridColumn TItem="Ahorros" Property="MontoMeta" Title="Monto meta" />
+                <RadzenGridColumn TItem="Ahorros" Property="FrecuenciaAhorro" Title="Frecuencia de ahorro" >
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="Ahorros" Title="Editar">
+                    <Template Context="Ahorros">
+                        <RadzenLink Path=@($"/registro-ahorro/{Ahorros.AhorroId}") Text="Ver">
+                            <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="Ver" />
+                        </RadzenLink>
+                    </Template>
+                </RadzenGridColumn>
 
-    <div class="container">
-        <div class="card shadow-lg">
-            <div class="card-header">
-                <h4>Consulta de Ahorros</h4>
-            </div>
+            </Columns>
+        </RadzenGrid>
+    }
 
-            <div class="card-body">
-                <div class="input-group mb-3">
-                    <InputText @bind-Value="Asunto" class="form-control" aria-describedby="buscarButton" />
-                    <button @onclick="Buscar" class="btn btn-outline-primary" type="button" id="buscarButton">
-                        <i class="oi oi-magnifying-glass" />
-                    </button>
-                </div>
-
-                <table class="table table-responsive table-condensed table-bordered table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>AhorroId</th>
-                            <th>NombreMeta</th>
-                            <th>Fecha</th>                            
-                            <th>MontoMeta</th>
-                            <th>FrecuenciaAhorro</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var ahorro in L_Ahorros)
-                        {
-                            <tr>
-                                <td>@ahorro.AhorroId</td>
-                                <td>@ahorro.NombreMeta</td>
-                                <td>@ahorro.Fecha</td>                                
-                                <td>@ahorro.MontoMeta</td>
-                                <td>@ahorro.FrecuenciaAhorro</td>
-                                
-                                <td><a class="btn btn-outline-primary" href="ocupacion/@ahorro.Fecha">Ver</a></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="card-footer">
-                <div class="form-row justify-content-sm-between" aria-orientation="vertical">
-                    <div class="col-3">
-                        <label for="CantidaRegistro" class="col-form-label"><strong>Filas</strong>&nbsp;</label>
-                        <input id="CantidaRegistro" @bind-value="@Conteo" disabled class="form-control" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</EditForm>
+</div>
 
 @code
 {
@@ -67,18 +44,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var ahorro = await httpClient.GetFromJsonAsync<List<Ahorros>>($"api/Ahorros");
+        var ahorros = await httpClient.GetFromJsonAsync<List<Ahorros>>($"api/Ahorros");
 
-        if(ahorro is not null)
+        if(ahorros is not null)
         {
-            L_Ahorros = ahorro;
+            L_Ahorros = ahorros;
         }
     }
-    public async Task Buscar()
-    {
-        L_Ahorros = await httpClient.GetFromJsonAsync<List<Ahorros>>($"api/Ahorros");
-
-        Conteo = L_Ahorros != null ? L_Ahorros!.Count() : 0;
-        StateHasChanged();
-    }  
 }

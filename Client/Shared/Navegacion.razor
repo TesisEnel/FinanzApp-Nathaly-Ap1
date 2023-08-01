@@ -1,0 +1,93 @@
+@inherits LayoutComponentBase
+
+@using FinanzApp.Client.Extensors;
+@using Microsoft.AspNetCore.Components.Authorization;
+@inject AuthenticationStateProvider autenticacionProvider
+@inject NavigationManager navManager
+
+<nav class="navbar navbar-expand-md navbar-dark" style="background-color: #00aaff;">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <i class="fa fa-laptop"></i>
+        </a>
+        <a class="navbar-brand" href="index">FinanzApp</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="index">Inicio</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="index" id="clientesDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Ingresos
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="clientesDropdown">
+                        <li><a class="dropdown-item" href="registro-ingresos">Registrar Ingreso</a></li>
+                        <li><a class="dropdown-item" href="ConsultaIngreso">Consultar Ingreso</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="index" id="facturasDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Gastos</a>
+                    <ul class="dropdown-menu" aria-labelledby="facturasDropdown">
+                        <li><a class="dropdown-item" href="RegistroGastos">Registrar Gastos</a></li>
+                        <li><a class="dropdown-item" href="gastos">Consultar Gastos</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="facturasDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Deudas
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="facturasDropdown">
+                        <li><a class="dropdown-item" href="registro-deudas">Registrar Deuda</a></li>
+                        <li><a class="dropdown-item" href="Consultadeuda">Consultar Deudas</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="productosDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Ahorros
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="productosDropdown">
+                        <li><a class="dropdown-item" href="registro-ahorro">Registrar Ahorro</a></li>
+                        <li><a class="dropdown-item" href="ConsultaAhorro">Consultar Ahorros</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="productosDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Ver Balance
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="productosDropdown">                        
+                        <li><a class="dropdown-item" href="Consultacuenta">Ver Balance</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" @onclick="CerrarSesion" href="javascript:void(0)">Salir</a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private async Task CerrarSesion()
+    {
+        var autenticacionExt = (AutenticacionExtension)autenticacionProvider;
+        await autenticacionExt.ActualizarEstadoAutenticacion(null);
+        navManager.NavigateTo("/", true);
+    }
+}

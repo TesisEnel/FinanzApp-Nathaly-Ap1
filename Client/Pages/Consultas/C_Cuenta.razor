@@ -4,56 +4,37 @@
 
 
 <EditForm Model="L_Cuentas">
-
     <div class="container">
         <div class="card shadow-lg">
-            <div class="card-header">
-                <h4>Consulta de Cuenta</h4>
+            <div class="card-header bg-primary text-white">
+                <h4>Balance Disponible</h4>
             </div>
-
             <div class="card-body">
-                <div class="input-group mb-3">
-                    <InputText @bind-Value="Asunto" class="form-control" aria-describedby="buscarButton" />
-                    <button @onclick="Buscar" class="btn btn-outline-primary" type="button" id="buscarButton">
-                        <i class="oi oi-magnifying-glass" />
-                    </button>
-                </div>
-
-                <table class="table table-responsive table-condensed table-bordered table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>Id</th>
-                            <th>Nombre Cliente</th>
-                            <th>Monto</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var cuenta in L_Cuentas)
-                        {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead class="thead-dark">
                             <tr>
-                                <td>@cuenta.Id</td>
-                                <td>@cuenta.NombreCliente</td>
-                                <td>@cuenta.Monto</td>
-                              
-                                <td><a class="btn btn-outline-primary" href="ocupacion/@cuenta.Id">Ver</a></td>
+                                <th class="align-middle">Id</th>
+                                <th class="align-middle">Usuario</th>
+                                <th class="align-middle">Monto</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="card-footer">
-                <div class="form-row justify-content-sm-between" aria-orientation="vertical">
-                    <div class="col-3">
-                        <label for="CantidaRegistro" class="col-form-label"><strong>Filas</strong>&nbsp;</label>
-                        <input id="CantidaRegistro" @bind-value="@Conteo" disabled class="form-control" />
-                    </div>
+                        </thead>
+                        <tbody>
+                            @foreach (var cuenta in L_Cuentas)
+                            {
+                                <tr>
+                                    <td>@cuenta.Id</td>
+                                    <td>@cuenta.NombreCliente</td>
+                                    <td>@cuenta.Monto</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 </EditForm>
-
 @code
 {
     public string Asunto  { get; set; } = "";

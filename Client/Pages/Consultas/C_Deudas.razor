@@ -1,62 +1,38 @@
 @page "/Consultadeuda"
 @inject HttpClient httpClient
 
+<h1 class="text-center">Consulta de Deudas</h1>
 
+<div>
+    @if (L_Deudas == null)
+    {
+        <p><em>Sin datos para mostrar...</em></p>
+    }
+    else
+    {
+        <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+            FilterMode="FilterMode.Advanced" AllowPaging="true" PageSize="4" PagerHorizontalAlign="HorizontalAlign.Left"
+            AllowSorting="true" Data="@L_Deudas" ColumnWidth="180px">
+            <Columns>
+                <RadzenGridColumn TItem="Deudas" Property="DeudaId" Title="ID" />
+                <RadzenGridColumn TItem="Deudas" Property="Fecha" Title="Fecha" />
+                <RadzenGridColumn TItem="Deudas" Property="NombreAcreedor" Title="Nombre Acreedor" />
+                <RadzenGridColumn TItem="Deudas" Property="TipoDeuda" Title="Tipo Deuda" />
+                <RadzenGridColumn TItem="Deudas" Property="MontoTotal" Title="Monto Total" >
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="Deudas" Title="Editar">
+                    <Template Context="Deudas">
+                        <RadzenLink Path=@($"/registro-Deudas/{Deudas.DeudaId}") Text="Ver">
+                            <RadzenBadge BadgeStyle="BadgeStyle.Success" Text="Ver" />
+                        </RadzenLink>
+                    </Template>
+                </RadzenGridColumn>
 
-<EditForm Model="L_Deudas">
+            </Columns>
+        </RadzenGrid>
+    }
 
-    <div class="container">
-        <div class="card shadow-lg">
-            <div class="card-header">
-                <h4>Consulta de Deudas</h4>
-            </div>
-
-            <div class="card-body">
-                <div class="input-group mb-3">
-                    <InputText @bind-Value="Asunto" class="form-control" aria-describedby="buscarButton" />
-                    <button @onclick="Buscar" class="btn btn-outline-primary" type="button" id="buscarButton">
-                        <i class="oi oi-magnifying-glass" />
-                    </button>
-                </div>
-
-                <table class="table table-responsive table-condensed table-bordered table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>DeudaId</th>
-                            <th>Fecha</th>
-                            <th>NombreAcreedor</th>
-                            <th>TipoDeuda</th>
-                            <th>MontoTotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var deuda in L_Deudas)
-                        {
-                            <tr>
-                                <td>@deuda.DeudaId</td>
-                                <td>@deuda.Fecha</td>
-                                <td>@deuda.NombreAcreedor</td>
-                                <td>@deuda.TipoDeuda</td>
-                                <td>@deuda.MontoTotal</td>
-                                
-                                <td><a class="btn btn-outline-primary" href="ocupacion/@deuda.Fecha">Ver</a></td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="card-footer">
-                <div class="form-row justify-content-sm-between" aria-orientation="vertical">
-                    <div class="col-3">
-                        <label for="CantidaRegistro" class="col-form-label"><strong>Filas</strong>&nbsp;</label>
-                        <input id="CantidaRegistro" @bind-value="@Conteo" disabled class="form-control" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</EditForm>
+</div>
 
 @code
 {
@@ -67,18 +43,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var ingreso = await httpClient.GetFromJsonAsync<List<Deudas>>($"api/Deudas");
+        var deudas = await httpClient.GetFromJsonAsync<List<Deudas>>($"api/Deudas");
 
-        if(ingreso is not null)
+        if(deudas is not null)
         {
-            L_Deudas = ingreso;
+            L_Deudas = deudas;
         }
     }
-    public async Task Buscar()
-    {
-        L_Deudas = await httpClient.GetFromJsonAsync<List<Deudas>>($"api/Deudas");
-
-        Conteo = L_Deudas != null ? L_Deudas!.Count() : 0;
-        StateHasChanged();
-    }  
 }

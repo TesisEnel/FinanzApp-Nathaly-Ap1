@@ -1,32 +1,28 @@
 ﻿@page "/Index"
-
-@using Microsoft.AspNetCore.Authorization;
-@using Microsoft.AspNetCore.Components.Authorization;
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 @attribute [Authorize]
-
 
 <PageTitle>FinanzApp</PageTitle>
 
+
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-lg-6">
-            <div class="text-center mb-4">
-                <h1 class="display-4 text-primary">FinanzApp</h1>
-            </div>
-            <div class="text-center mb-4">
-                <h4 class="text-muted">Gestiona tus finanzas fácilmente.</h4>
-            </div>
-            <div class="text-center mb-4">
-                <h4 class="text-muted">Controla tus finanzas, alcanza tus metas.</h4>
-            </div>
+        <div class="col-lg-6 text-center">
+            <h1 class="display-4 text-primary">FinanzApp</h1>
             <AuthorizeView>
                 <Authorized>
-                    <div class="text-center mb-4">
-                        <h4 class="text-success">¡ Bienvenida @context.User.Identity.Name !</h4>
-                    </div>
+                    <h4 class="text-success">¡ Bienvenida @context.User.Identity.Name !</h4>
                 </Authorized>
             </AuthorizeView>
+            <p class="lead mt-4">Aquí podrás:</p>
+            <ul class="list-unstyled">
+                <li><i class="oi oi-check text-success"></i> Registrar tus ingresos y gastos.</li>
+                <li><i class="oi oi-check text-success"></i> Establecer metas financieras.</li>
+                <li><i class="oi oi-check text-success"></i> Visualizar tu balance y estado financiero.</li>
+                <li><i class="oi oi-check text-success"></i> Controlar tus gastos por categoría.</li>
+            </ul>
+            <p class="text-muted">¡Comienza a tomar el control de tus finanzas hoy mismo!</p>
         </div>
     </div>
 </div>
-
