@@ -9,7 +9,7 @@ Registro de Ingresos y Gastos: Los usuarios pueden registrar sus ingresos y gast
 Metas de Ahorro: Los usuarios pueden establecer metas de ahorro específicas, como ahorrar para unas vacaciones o para comprar un artículo costoso. Pueden definir un monto objetivo y una frecuencia de ahorro para alcanzar la meta.
 
 
-#FinanzApp tiene las siguientes funcionalidades:
+# FinanzApp tiene las siguientes funcionalidades:
 
 # Login 
 
