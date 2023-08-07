@@ -1,5 +1,5 @@
 # Proyecto Final Nathaly Goris Espino (2021-0126)
-# Email: nathaly@gmail.com Password: 2021-0126
+Email: nathaly@gmail.com Password: 2021-0126
 
 # FinanzApp
 FinanzApp es una aplicación web que tiene como objetivo ayudar a los usuarios a gestionar sus finanzas personales. Proporciona herramientas para registrar ingresos, gastos, y metas de ahorro. A través de una interfaz sencilla y amigable, los usuarios pueden mantener un registro de sus transacciones financieras y tener una visión general de sus flujos de dinero.
